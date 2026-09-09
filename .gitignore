@@ -5,3 +5,4 @@ generated-assets.js
 .qa/
 *.tgz
 .env
+.DS_Store
