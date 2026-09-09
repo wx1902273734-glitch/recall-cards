@@ -1,0 +1,21 @@
+{
+  "name": "huixiang-recall-cards",
+  "private": true,
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "node scripts/generate-assets.mjs && vite build",
+    "db:generate": "drizzle-kit generate",
+    "test": "node .qa/interactions.cjs && node .qa/backend.mjs"
+  },
+  "dependencies": {
+    "dompurify": "3.2.7",
+    "drizzle-orm": "0.44.5",
+    "marked": "15.0.12"
+  },
+  "devDependencies": {
+    "@openai/sites-vite-plugin": "0.2.0",
+    "drizzle-kit": "0.31.4",
+    "jsdom": "26.1.0",
+    "vite": "8.2.2"
+  }
+}

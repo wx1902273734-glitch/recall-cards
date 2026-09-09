@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#F9F9F7" />
+    <title>回响卡 · 轻量记忆卡片</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <button id="cloudStatus" class="cloud-status" title="连接与保存状态">本地保存</button>
+    <div class="app-shell">
+      <aside class="sidebar" id="mainSidebar" aria-label="牌组导航">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">回</span>
+          <div>
+            <strong>回响卡</strong>
+            <small>把知识叫回来</small>
+          </div>
+        </div>
+
+        <nav class="nav-list" aria-label="主导航">
+          <button class="nav-item active" data-view="review">
+            <span class="nav-icon">↻</span><span>今日复习</span>
+            <span class="nav-count" id="dueCount">0</span>
+          </button>
+          <button class="nav-item" data-view="library">
+            <span class="nav-icon">▤</span><span>全部卡片</span>
+          </button>
+        </nav>
+
+        <div class="deck-section">
+          <p class="section-label">牌组</p>
+          <button class="deck-item selected" data-deck="all">
+            <span class="deck-dot blue"></span><span>所有卡片</span>
+            <span id="allCount">0</span>
+          </button>
+          <div id="deckList"></div>
+        </div>
+
+        <div class="sidebar-foot">
+          <div class="streak">
+            <span class="streak-icon">◇</span>
+            <div><strong id="streakDays">0 次</strong><small>累计复习</small></div>
+          </div>
+          <button class="icon-button" id="exportBtn" title="导出卡片" aria-label="导出卡片">↓</button>
+        </div>
+      </aside>
+
+      <main class="main">
+        <button class="icon-button sidebar-toggle" id="sidebarToggle" aria-controls="mainSidebar" aria-expanded="true" aria-label="收起侧边栏" title="收起侧边栏">◧</button>
+        <header class="topbar">
+          <div>
+            <p class="eyebrow" id="viewEyebrow">VOL. 01 · 今日版</p>
+            <h1 id="viewTitle">先想，再看答案</h1>
+          </div>
+          <div class="top-actions">
+            <button class="button ghost" id="importBtn">导入文件</button>
+            <button class="button ghost" id="importFolderBtn">导入文件夹</button>
+            <input type="file" id="importInput" accept=".json,application/json,.md,.markdown,.txt,text/plain" multiple hidden />
+            <input type="file" id="importFolderInput" accept=".md,.markdown,.txt,text/plain" webkitdirectory directory multiple hidden />
+            <button class="button primary" id="newCardBtn"><span>＋</span> 新建卡片</button>
+          </div>
+        </header>
+
+        <section id="reviewView" class="view active">
+          <div class="review-navigation">
+            <button class="button ghost" id="backToLibrary">返回卡片列表</button><span class="action-spacer"></span>
+            <button class="button ghost" id="previousCard">← 上一张</button><button class="button ghost" id="nextCard">下一张 →</button>
+            <button class="button ghost" id="editCurrentCard">编辑</button>
+          </div>
+          <button class="icon-button outline-toggle" id="outlineToggle" aria-controls="outlinePanel" aria-expanded="false" title="打开目录">☷<span>目录</span></button>
+          <aside class="outline-panel" id="outlinePanel" aria-label="复习目录" hidden>
+            <div class="outline-head"><strong>复习目录</strong><button class="icon-button" id="closeOutline" aria-label="关闭目录">×</button></div>
+            <p class="section-label">当前卡片 · 内容标题</p><nav id="headingOutline"></nav>
+            <p class="section-label">卡片列表</p><nav id="cardOutline"></nav>
+          </aside>
+          <div class="review-summary" aria-label="复习进度">
+            <div class="progress-track"><span id="progressBar"></span></div>
+            <span id="progressText">准备开始</span>
+          </div>
+
+          <div class="review-stage">
+            <article class="flashcard" id="flashcard" tabindex="0" aria-live="polite">
+              <div class="card-meta">
+                <span class="tag" id="cardDeck">牌组</span>
+                <span id="cardIndex">1 / 1</span>
+              </div>
+              <div class="card-face" id="questionFace">
+                <p class="face-label">问题</p>
+                <div class="rendered-content" id="questionContent"></div>
+              </div>
+              <div class="answer-divider" id="answerDivider">
+                <span>答案</span>
+              </div>
+              <div class="card-face answer-face" id="answerFace" hidden>
+                <div class="rendered-content" id="answerContent"></div>
+              </div>
+              <button class="reveal-button" id="revealBtn">显示答案 <kbd>空格</kbd></button>
+            </article>
+
+            <div class="rating-panel" id="ratingPanel" hidden>
+              <p>这次回忆得怎么样？</p>
+              <div class="rating-buttons">
+                <button class="rating again" data-rating="again"><strong>忘了</strong><span>10 分钟</span><kbd>1</kbd></button>
+                <button class="rating hard" data-rating="hard"><strong>模糊</strong><span>1 天</span><kbd>2</kbd></button>
+                <button class="rating good" data-rating="good"><strong>记得</strong><span>3 天</span><kbd>3</kbd></button>
+                <button class="rating easy" data-rating="easy"><strong>熟练</strong><span>7 天</span><kbd>4</kbd></button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="libraryView" class="view">
+          <div class="library-toolbar">
+            <label class="search-box">
+              <span>⌕</span>
+              <input id="searchInput" type="search" placeholder="搜索问题、答案或标签" />
+            </label>
+            <select id="deckFilter" aria-label="筛选牌组"><option value="all">所有牌组</option></select>
+            <button class="button ghost" id="deleteSelectedBtn" hidden>删除所选</button>
+          </div>
+          <div class="card-list" id="cardList"></div>
+        </section>
+      </main>
+    </div>
+
+    <dialog id="editorDialog" class="editor-dialog">
+      <form method="dialog" id="editorForm">
+        <div class="dialog-head">
+          <div><p class="eyebrow">编辑器</p><h2 id="dialogTitle">新建卡片</h2></div>
+          <button class="icon-button close-button" type="button" data-close-dialog aria-label="关闭">×</button>
+        </div>
+
+        <div class="editor-grid">
+          <div class="editor-fields">
+            <label>牌组<input id="deckInput" required placeholder="例如：前端基础" /></label>
+            <label>问题<textarea id="questionInput" required rows="6" placeholder="支持 **Markdown**、表格和代码块"></textarea></label>
+            <label>答案<textarea id="answerInput" required rows="10" placeholder="写下答案，或插入 ```html 代码块"></textarea></label>
+            <label>标签<input id="tagsInput" placeholder="用逗号分隔，例如：CSS, 布局" /></label>
+          </div>
+          <div class="preview-pane">
+            <div class="preview-head">
+              <span>实时预览</span>
+              <div class="segmented" role="tablist">
+                <button type="button" class="active" data-preview="rendered">内容</button>
+                <button type="button" data-preview="html">HTML</button>
+              </div>
+            </div>
+            <div class="preview-body rendered-content" id="livePreview"></div>
+            <div class="html-preview-wrap" id="htmlPreviewWrap" hidden>
+              <iframe id="htmlPreview" title="HTML 代码预览" sandbox></iframe>
+              <p class="preview-note">HTML 在沙箱中运行，不允许脚本和外部访问。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="dialog-actions">
+          <button class="button danger" type="button" id="deleteBtn" hidden>删除卡片</button>
+          <span class="action-spacer"></span>
+          <button class="button ghost" type="button" data-close-dialog>取消</button>
+          <button class="button primary" type="submit">保存卡片</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="editor-dialog export-dialog" id="exportDialog">
+      <div class="dialog-head"><h2>按牌组导出</h2><button class="icon-button" id="closeExport" aria-label="关闭导出">×</button></div>
+      <p>每个牌组独立保存为一个 JSON 文件，可分别导入恢复。</p>
+      <div id="exportDeckList"></div>
+    </dialog>
+    <div class="toast" id="toast" role="status"></div>
+    <div class="deck-menu" id="deckMenu" hidden>
+      <button data-deck-action="pin">◆ <span>置顶牌组</span></button>
+      <button data-deck-action="rename">✎ <span>重命名</span></button>
+      <button class="menu-danger" data-deck-action="delete">× <span>删除牌组</span></button>
+    </div>
+    <script src="./vendor/marked.js"></script>
+    <script src="./vendor/purify.js"></script>
+    <script src="./content.js"></script>
+    <script src="./app.js"></script>
+    <script src="./cloud.js"></script>
+  </body>
+</html>
