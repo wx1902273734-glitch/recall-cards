@@ -403,11 +403,15 @@ async function importFiles(fileList) {
   if (!files.length) return;
   const destination = importDeck;
   try {
-    const supported = files.filter(file => /\.(json|md|markdown|txt)$/i.test(file.name));
+      const supported = files.filter(file => /\.(json|jsonl|md|markdown|txt)$/i.test(file.name));
     if (!supported.length) throw new Error();
     const batches = await Promise.all(supported.map(async file => {
-      if (/\.json$/i.test(file.name)) {
-        const data = JSON.parse(await file.text());
+      if (/\.(json|jsonl)$/i.test(file.name)) {
+        const raw = await file.text();
+        // 支持标准 JSON 数组/牌组对象，也支持逐行 JSONL（如问答导出规范）
+        const data = /\.jsonl$/i.test(file.name)
+          ? raw.split(/\r?\n/).map(line => line.trim()).filter(Boolean).map(line => JSON.parse(line))
+          : JSON.parse(raw);
         const rows = Array.isArray(data) ? data : data.cards;
         if (!Array.isArray(rows) || rows.some(row => !row || typeof row.question !== 'string' || typeof row.answer !== 'string')) throw new Error();
         return rows.map(row => ({...row, id: crypto.randomUUID(),
