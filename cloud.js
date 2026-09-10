@@ -4,7 +4,11 @@ let cloudReady = false;
 let cloudPending = null;
 let cloudSending = false;
 let cloudConflict = false;
-const cloudEnabled = location.protocol === 'https:';
+// Production uses Sites/D1; localhost uses the Vite persistence middleware.
+const localBackend = ['127.0.0.1', 'localhost'].includes(location.hostname);
+const cloudEnabled = location.protocol === 'https:' || localBackend;
+const savedStatus = localBackend ? '已保存到本机后端' : '已保存到云端';
+const connectedStatus = localBackend ? '已连接本机后端' : '已连接云端';
 
 function cloudStatus(text) { document.querySelector('#cloudStatus').textContent = text; }
 function scheduleCloudSave(snapshot) {
@@ -26,7 +30,7 @@ async function flushCloud() {
       cloudRevision = (await response.json()).revision;
       if (cloudPending === pending) cloudPending = null;
     }
-    cloudStatus('已保存到云端');
+    cloudStatus(savedStatus);
   } catch(error) { cloudStatus(error.message); }
   finally { cloudSending = false; }
 }
@@ -48,7 +52,7 @@ async function connectCloud() {
     cloudReady = true;
     refreshSidebar(); startReview();
     document.querySelector('.app-shell').inert = false;
-    if (data.revision === 0) scheduleCloudSave(cards); else cloudStatus('已连接云端');
+    if (data.revision === 0) scheduleCloudSave(cards); else cloudStatus(connectedStatus);
   } catch(error) { cloudStatus(error.message); }
 }
 window.addEventListener('online', () => cloudReady ? flushCloud() : connectCloud());

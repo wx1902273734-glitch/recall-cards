@@ -6,3 +6,4 @@ generated-assets.js
 *.tgz
 .env
 .DS_Store
+.local-data/
