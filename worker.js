@@ -1,6 +1,10 @@
 import { assets } from './generated-assets.js';
 
 const json = (data, status = 200) => Response.json(data, {status, headers:{'Cache-Control':'no-store'}});
+function authorized(request, env) {
+  if (!env.APP_TOKEN) return true;
+  return request.headers.get('Authorization') === `Bearer ${env.APP_TOKEN}`;
+}
 function validCards(cards) {
   return Array.isArray(cards) && cards.length <= 10000 && new Set(cards.map(c => c?.id)).size === cards.length && cards.every(c =>
     c && typeof c.id === 'string' && typeof c.deck === 'string' && c.deck.trim() && typeof c.question === 'string' && typeof c.answer === 'string' &&
@@ -9,7 +13,9 @@ function validCards(cards) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    if (url.pathname === '/api/health') return json({ok:true, authRequired:Boolean(env.APP_TOKEN)});
     if (url.pathname === '/api/cards') {
+      if (!authorized(request, env)) return json({error:'需要个人访问密钥'},401);
       try {
         if (request.method === 'GET') {
           const row = await env.DB.prepare('SELECT revision, cards FROM card_store WHERE id = 1').first();
@@ -33,6 +39,7 @@ export default {
     if (!['GET','HEAD'].includes(request.method)) return new Response('Method not allowed',{status:405});
     const asset = assets[url.pathname === '/' ? '/index.html' : url.pathname];
     if (!asset) return new Response('Not found',{status:404});
-    return new Response(request.method === 'HEAD' ? null : asset.body, {headers:{'Content-Type':asset.type,'Cache-Control':'no-cache','X-Content-Type-Options':'nosniff'}});
+    const body = asset.base64 ? Uint8Array.from(atob(asset.body), character => character.charCodeAt(0)) : asset.body;
+    return new Response(request.method === 'HEAD' ? null : body, {headers:{'Content-Type':asset.type,'Cache-Control':'no-cache','X-Content-Type-Options':'nosniff','Referrer-Policy':'same-origin','X-Frame-Options':'DENY'}});
   }
 };

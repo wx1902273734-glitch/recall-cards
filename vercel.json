@@ -1,0 +1,16 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "headers": [
+    {
+      "source": "/sw.js",
+      "headers": [{"key":"Service-Worker-Allowed","value":"/"}]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {"key":"X-Content-Type-Options","value":"nosniff"},
+        {"key":"Referrer-Policy","value":"same-origin"}
+      ]
+    }
+  ]
+}

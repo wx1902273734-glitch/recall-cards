@@ -403,18 +403,28 @@ async function importFiles(fileList) {
   if (!files.length) return;
   const destination = importDeck;
   try {
-      const supported = files.filter(file => /\.(json|jsonl|md|markdown|txt)$/i.test(file.name));
-    if (!supported.length) throw new Error();
+    const supported = files.filter(file => /\.(json|jsonl|md|markdown|txt)$/i.test(file.name));
+    if (!supported.length) throw new Error('没有可导入的 JSON、JSONL、Markdown 或文本文件');
     const batches = await Promise.all(supported.map(async file => {
       if (/\.(json|jsonl)$/i.test(file.name)) {
         const raw = await file.text();
-        // 支持标准 JSON 数组/牌组对象，也支持逐行 JSONL（如问答导出规范）
-        const data = /\.jsonl$/i.test(file.name)
-          ? raw.split(/\r?\n/).map(line => line.trim()).filter(Boolean).map(line => JSON.parse(line))
-          : JSON.parse(raw);
+        let data;
+        if (/\.jsonl$/i.test(file.name)) {
+          data = [];
+          raw.split(/\r?\n/).forEach((line, index) => {
+            if (!line.trim()) return;
+            try { data.push(JSON.parse(line)); }
+            catch { throw new Error(`${file.name} 第 ${index + 1} 行不是有效 JSON`); }
+          });
+        } else {
+          try { data = JSON.parse(raw); }
+          catch { throw new Error(`${file.name} 不是有效 JSON`); }
+        }
         const rows = Array.isArray(data) ? data : data.cards;
-        if (!Array.isArray(rows) || rows.some(row => !row || typeof row.question !== 'string' || typeof row.answer !== 'string')) throw new Error();
-        return rows.map(row => ({...row, id: crypto.randomUUID(),
+        if (!Array.isArray(rows)) throw new Error(`${file.name} 缺少 cards 数组`);
+        const invalidIndex = rows.findIndex(row => !row || typeof row.question !== 'string' || !row.question.trim() || typeof row.answer !== 'string' || !row.answer.trim());
+        if (invalidIndex >= 0) throw new Error(`${file.name} 第 ${invalidIndex + 1} 条缺少 question 或 answer`);
+        return rows.map(row => ({...row, id:crypto.randomUUID(),
           deck: destination !== 'all' ? destination : (typeof row.deck === 'string' && row.deck.trim() ? row.deck : '随手记'),
           tags: Array.isArray(row.tags) ? row.tags.filter(tag => typeof tag === 'string') : [],
           due: Number.isFinite(row.due) ? row.due : Date.now(), interval: Number.isFinite(row.interval) && row.interval >= 0 ? row.interval : 0,
@@ -423,9 +433,22 @@ async function importFiles(fileList) {
       return [{id: crypto.randomUUID(), deck: destination !== 'all' ? destination : '随手记', tags: ['文件导入'], question: file.name.replace(/\.(md|markdown|txt)$/i, ''), answer: await file.text(), due: Date.now(), interval: 0, reviews: 0}];
     }));
     const imported = batches.flat();
-    cards = [...imported, ...cards]; currentDeck = destination; saveCards(); showView('library');
+    if (!imported.length) throw new Error('文件里没有卡片');
+    const fingerprints = new Set(cards.map(card => [card.deck, card.question.trim(), card.answer.trim()].join('\n')));
+    let duplicates = 0;
+    for (const card of imported) {
+      const key = [card.deck, card.question.trim(), card.answer.trim()].join('\n');
+      if (fingerprints.has(key)) duplicates++;
+      fingerprints.add(key);
+    }
+    const nextCards = [...imported, ...cards];
+    if (nextCards.length > 10000 || new Blob([JSON.stringify(nextCards)]).size > 8 * 1024 * 1024) throw new Error('导入后会超过 10000 张或 8MB，请拆分整理后再导入');
+    const deckSummary = [...new Set(imported.map(card => card.deck))].map(deck => `${deck} ${imported.filter(card => card.deck === deck).length} 张`).join('、');
+    const duplicateNote = duplicates ? `\n检测到 ${duplicates} 张重复卡片，将保留副本。` : '';
+    if (!confirm(`准备导入 ${imported.length} 张卡片：${deckSummary}。${duplicateNote}\n确认继续？`)) return;
+    cards = nextCards; currentDeck = destination; saveCards(); showView('library');
     showToast(`已追加导入 ${imported.length} 张卡片${destination !== 'all' ? '到「' + destination + '」' : ''}`);
-  } catch { showToast("无法读取这些文件"); }
+  } catch(error) { showToast(error.message || '无法读取这些文件'); }
 }
 $("#importInput").onchange = event => { importFiles(event.target.files); event.target.value = ""; };
 $("#importFolderInput").onchange = event => { importFiles(event.target.files); event.target.value = ""; };

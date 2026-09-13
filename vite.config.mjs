@@ -58,7 +58,7 @@ function localPersistence() {
 }
 
 export default defineConfig({
-  plugins: [sites()],
+  plugins: [localPersistence(), sites()],
   server: {
     host: '0.0.0.0',
   },

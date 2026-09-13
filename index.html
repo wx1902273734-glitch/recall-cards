@@ -4,7 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#F9F9F7" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <title>回响卡 · 轻量记忆卡片</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./icons/icon-192.png" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
@@ -55,6 +60,7 @@
             <h1 id="viewTitle">先想，再看答案</h1>
           </div>
           <div class="top-actions">
+            <button class="button ghost" id="installBtn" hidden>安装应用</button>
             <button class="button ghost" id="importBtn">导入文件</button>
             <button class="button ghost" id="importFolderBtn">导入文件夹</button>
             <input type="file" id="importInput" accept=".json,.jsonl,application/json,.md,.markdown,.txt,text/plain" multiple hidden />
@@ -169,6 +175,14 @@
       <p>每个牌组独立保存为一个 JSON 文件，可分别导入恢复。</p>
       <div id="exportDeckList"></div>
     </dialog>
+    <dialog class="editor-dialog access-dialog" id="accessDialog">
+      <form id="accessForm">
+        <div class="dialog-head"><div><p class="eyebrow">个人空间</p><h2>连接你的卡片</h2></div></div>
+        <p id="accessMessage">请输入部署时设置的个人访问密钥。</p>
+        <label>访问密钥<input id="accessTokenInput" type="password" autocomplete="current-password" required /></label>
+        <div class="dialog-actions"><button class="button ghost" type="button" id="clearAccessToken">清除本机密钥</button><span class="action-spacer"></span><button class="button primary" type="submit">连接并同步</button></div>
+      </form>
+    </dialog>
     <div class="toast" id="toast" role="status"></div>
     <div class="deck-menu" id="deckMenu" hidden>
       <button data-deck-action="pin">◆ <span>置顶牌组</span></button>
@@ -180,5 +194,6 @@
     <script src="./content.js"></script>
     <script src="./app.js"></script>
     <script src="./cloud.js"></script>
+    <script src="./pwa.js"></script>
   </body>
 </html>
