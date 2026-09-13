@@ -58,6 +58,9 @@ function localPersistence() {
 }
 
 export default defineConfig({
-  plugins: [localPersistence(), sites()],
+  plugins: [sites()],
+  server: {
+    host: '0.0.0.0',
+  },
   build: { target:'es2022', lib: {entry:'worker.js',formats:['es'],fileName:()=>'server/index.js'}, minify:false },
 });

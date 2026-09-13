@@ -2,7 +2,7 @@
   "name": "huixiang-recall-cards",
   "private": true,
   "scripts": {
-    "dev": "vite --host 127.0.0.1",
+    "dev": "vite --host 0.0.0.0",
     "build": "node scripts/generate-assets.mjs && vite build",
     "db:generate": "drizzle-kit generate",
     "test": "node .qa/interactions.cjs && node .qa/backend.mjs"

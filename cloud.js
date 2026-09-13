@@ -1,14 +1,13 @@
-// The private Site owns one card collection; local files remain usable offline.
+// The development machine serves the card API.
+const API_BASE = 'http://hanshijie.bcc-szzj.baidu.com:8848';
 let cloudRevision = 0;
 let cloudReady = false;
 let cloudPending = null;
 let cloudSending = false;
 let cloudConflict = false;
-// Production uses Sites/D1; localhost uses the Vite persistence middleware.
-const localBackend = ['127.0.0.1', 'localhost'].includes(location.hostname);
-const cloudEnabled = location.protocol === 'https:' || localBackend;
-const savedStatus = localBackend ? '已保存到本机后端' : '已保存到云端';
-const connectedStatus = localBackend ? '已连接本机后端' : '已连接云端';
+const cloudEnabled = true;
+const savedStatus = '已保存到开发机';
+const connectedStatus = '已连接开发机';
 
 function cloudStatus(text) { document.querySelector('#cloudStatus').textContent = text; }
 function scheduleCloudSave(snapshot) {
@@ -24,7 +23,7 @@ async function flushCloud() {
     while (cloudPending) {
       const pending = cloudPending;
       cloudStatus('正在保存…');
-      const response = await fetch('/api/cards',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({revision:cloudRevision,cards:JSON.parse(pending)})});
+      const response = await fetch(`${API_BASE}/api/cards`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({revision:cloudRevision,cards:JSON.parse(pending)})});
       if (response.status === 409) { cloudConflict = true; throw new Error('数据冲突：请导出当前卡片后刷新'); }
       if (!response.ok) throw new Error('未同步，点击重试');
       cloudRevision = (await response.json()).revision;
@@ -35,11 +34,10 @@ async function flushCloud() {
   finally { cloudSending = false; }
 }
 async function connectCloud() {
-  if (!cloudEnabled) { cloudStatus('本地保存'); return; }
   document.querySelector('.app-shell').inert = true;
-  cloudStatus('正在连接云端…');
+  cloudStatus('正在连接开发机…');
   try {
-    const response = await fetch('/api/cards');
+    const response = await fetch(`${API_BASE}/api/cards`);
     if (!response.ok) throw new Error('连接失败，点击重试');
     const data = await response.json();
     if (!Array.isArray(data.cards) || !Number.isSafeInteger(data.revision)) throw new Error('云端数据格式异常');
