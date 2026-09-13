@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "node scripts/generate-assets.mjs && vite build",
+    "build:vercel": "node scripts/build-vercel.mjs",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "wrangler d1 migrations apply recall-cards --remote",
     "deploy": "npm run build && wrangler deploy",

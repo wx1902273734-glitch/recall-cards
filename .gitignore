@@ -7,3 +7,5 @@ generated-assets.js
 .env
 .DS_Store
 .local-data/
+.vercel
+vercel-dist/

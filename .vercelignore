@@ -1,12 +1,9 @@
 .git
-.openai
 .local-data
 .qa
 db
 dist
+vercel-dist
 drizzle
 node_modules
-scripts
-worker.js
-vite.config.mjs
 wrangler.jsonc
