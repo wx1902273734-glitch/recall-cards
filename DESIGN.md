@@ -80,6 +80,8 @@ Primary is a soft near-black reserved for the main action and emphasis. Ink and 
 
 ## Typography
 
+The Pulse header uses the user-selected Anki wordmark, outlined in `icons/anki-wordmark.svg`. Its open A retains the card-shaped crossbar; the lowercase n uses a standard continuous arch. The companion app icon is the approved stacked-card mark in charcoal on white (`icons/anki-app.svg`). Both are native vector assets, independent of installed fonts. Pulse's favicon, install manifest, and Apple touch icon use this mark; classic branding remains available at the original entry point.
+
 Use the platform system sans stack throughout the Pulse interface. The largest numeric style belongs to the due-card count. Headlines introduce a view; compact labels support navigation and controls. Review questions and answers have more generous line spacing than dashboard labels.
 
 **The Content Rule.** Preserve Markdown hierarchy, readable paragraphs, tables, code, and sandboxed HTML previews. Long content scrolls naturally and wraps without expanding the viewport.

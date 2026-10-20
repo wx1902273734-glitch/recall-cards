@@ -1,6 +1,6 @@
 import {readFile,writeFile} from 'node:fs/promises';
 const assets = {};
-const files = ['index.html','pulse.html','pulse.css','pulse.js','pulse.webmanifest','styles.css','app.js','content.js','cloud.js','pwa.js','sw.js','manifest.webmanifest','icons/icon.svg','icons/icon-192.png','icons/icon-512.png','vendor/marked.js','vendor/purify.js'];
+const files = ['index.html','pulse.html','pulse.css','pulse.js','pulse.webmanifest','styles.css','app.js','content.js','cloud.js','pwa.js','sw.js','manifest.webmanifest','icons/icon.svg','icons/icon-192.png','icons/icon-512.png','icons/anki-app.svg','icons/anki-app-180.png','icons/anki-app-192.png','icons/anki-app-512.png','icons/anki-wordmark.svg','vendor/marked.js','vendor/purify.js'];
 const contentType = file => file.endsWith('.html') ? 'text/html; charset=utf-8'
   : file.endsWith('.css') ? 'text/css; charset=utf-8'
   : file.endsWith('.webmanifest') ? 'application/manifest+json; charset=utf-8'

@@ -1,5 +1,5 @@
-const CACHE_NAME = 'recall-cards-ui-v2';
-const APP_SHELL = ['./','./index.html','./pulse.html','./pulse.css','./pulse.js','./pulse.webmanifest','./styles.css','./app.js','./content.js','./cloud.js','./pwa.js','./manifest.webmanifest','./icons/icon.svg','./icons/icon-192.png','./icons/icon-512.png','./vendor/marked.js','./vendor/purify.js'];
+const CACHE_NAME = 'recall-cards-ui-v3';
+const APP_SHELL = ['./','./index.html','./pulse.html','./pulse.css','./pulse.js','./pulse.webmanifest','./styles.css','./app.js','./content.js','./cloud.js','./pwa.js','./manifest.webmanifest','./icons/icon.svg','./icons/icon-192.png','./icons/icon-512.png','./icons/anki-app.svg','./icons/anki-app-180.png','./icons/anki-app-192.png','./icons/anki-app-512.png','./icons/anki-wordmark.svg','./vendor/marked.js','./vendor/purify.js'];
 self.addEventListener('install', event => { event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', event => { event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key)))).then(() => self.clients.claim())); });
 self.addEventListener('fetch', event => {

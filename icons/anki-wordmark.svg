@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 252 88" role="img" aria-labelledby="title">
+  <title id="title">Anki</title>
+  <g fill="#242426">
+    <!-- Open A and detached crossbar retain the selected wordmark's card motif. -->
+    <path d="M2 80 32 8h20l30 72H61L42 31 23 80Z"/>
+    <path d="M34 59h19l-6 15H28Z"/>
+    <!-- Standard lowercase n: vertical stem, a continuous arch, and an open counter. -->
+    <path d="M89 80V27h18v7c4-5 9-8 16-8 15 0 23 10 23 26v28h-19V53c0-8-3-12-9-12-7 0-10 5-10 13v26Z"/>
+    <path d="M158 80V8h19v40l17-21h23l-22 25 24 28h-24l-18-23v23Z"/>
+    <path d="M230 27h19v53h-19Z"/>
+    <circle cx="239.5" cy="11" r="10"/>
+  </g>
+</svg>

@@ -18,6 +18,11 @@ const files = [
   'icons/icon.svg',
   'icons/icon-192.png',
   'icons/icon-512.png',
+  'icons/anki-app.svg',
+  'icons/anki-app-180.png',
+  'icons/anki-app-192.png',
+  'icons/anki-app-512.png',
+  'icons/anki-wordmark.svg',
   'vendor/marked.js',
   'vendor/purify.js',
 ];
