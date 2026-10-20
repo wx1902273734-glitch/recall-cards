@@ -22,6 +22,13 @@
 
 ## 本地运行
 
+### Pulse 界面与回退
+
+- `/` 保留原版报纸风格；`/pulse.html` 为参考 QuotaPulse 的黑白新版。
+- 两版同域共用卡片本机副本、访问密钥和同一云端空间；切换界面无需重新导入。
+- 新版右下角「返回经典版」可直接切回；牌组侧栏的展开偏好独立保存。
+- 原版代码备份分支：`codex/recall-before-quotapulse-20261020`（`35ace4a`）。
+
 ```bash
 npm install
 npm run dev

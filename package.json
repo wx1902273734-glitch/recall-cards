@@ -9,7 +9,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "wrangler d1 migrations apply recall-cards --remote",
     "deploy": "npm run build && wrangler deploy",
-    "test": "node .qa/interactions.cjs && node .qa/backend.mjs && node .qa/vercel.mjs"
+    "test": "node .qa/interactions.cjs && node .qa/backend.mjs && node .qa/vercel.mjs && node tests/pulse.cjs"
   },
   "dependencies": {
     "dompurify": "3.2.7",

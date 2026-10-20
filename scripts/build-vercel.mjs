@@ -4,6 +4,10 @@ import { dirname, join } from 'node:path';
 const outputDirectory = 'vercel-dist';
 const files = [
   'index.html',
+  'pulse.html',
+  'pulse.css',
+  'pulse.js',
+  'pulse.webmanifest',
   'styles.css',
   'app.js',
   'content.js',

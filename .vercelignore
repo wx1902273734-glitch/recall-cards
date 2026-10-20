@@ -7,3 +7,7 @@ vercel-dist
 drizzle
 node_modules
 wrangler.jsonc
+.impeccable
+tests
+PRODUCT.md
+DESIGN.md

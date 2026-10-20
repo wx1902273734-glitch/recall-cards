@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-20T06:45:00Z",
+  "title": "Design System: Recall Cards — Pulse",
+  "extensions": {
+    "shadows": [
+      {"name":"selected-segment","value":"0 1px 3px rgb(0 0 0 / .09)","purpose":"Selected navigation segment."},
+      {"name":"floating-menu","value":"0 8px 32px rgb(0 0 0 / .15)","purpose":"Import menu above page content."}
+    ],
+    "motion": [
+      {"name":"control","value":"background-color .16s ease, color .16s ease, box-shadow .16s ease","purpose":"Control feedback; disabled for reduced motion."},
+      {"name":"progress","value":"width .2s ease-out","purpose":"Review progress."}
+    ],
+    "breakpoints": [{"name":"compact","value":"799px"},{"name":"phone","value":"479px"}]
+  },
+  "components": [
+    {
+      "name":"Primary button","kind":"button","refersTo":"button-primary",
+      "description":"Main review or creation action.",
+      "html":"<button class=\"ds-primary\">开始复习 →</button>",
+      "css":".ds-primary{font:500 12px/1.5 -apple-system,sans-serif;border:1px solid transparent;border-radius:9px;background:#29292c;color:#fff;min-height:36px;padding:7px 13px;cursor:pointer;transition:background-color .16s ease}.ds-primary:hover{background:#444448}.ds-primary:active{background:#111113}.ds-primary:focus-visible{outline:2px solid #242426;outline-offset:3px}"
+    },
+    {
+      "name":"Ghost button","kind":"button","refersTo":"button-ghost",
+      "description":"Secondary action with a subtle boundary.",
+      "html":"<button class=\"ds-ghost\">导入卡片</button>",
+      "css":".ds-ghost{font:500 12px/1.5 -apple-system,sans-serif;border:1px solid #dddddf;border-radius:9px;background:#fff;color:#242426;min-height:36px;padding:7px 13px;cursor:pointer}.ds-ghost:hover{background:#eeeeef}.ds-ghost:focus-visible{outline:2px solid #242426;outline-offset:3px}"
+    },
+    {
+      "name":"Search field","kind":"input",
+      "description":"Search card content in the library.",
+      "html":"<input class=\"ds-search\" aria-label=\"搜索卡片\" placeholder=\"搜索卡片\" />",
+      "css":".ds-search{font:12px -apple-system,sans-serif;padding:10px 12px;min-height:38px;color:#242426;background:#fff;border:1px solid #dcdce1;border-radius:8px}.ds-search:hover{border-color:#aaa}.ds-search:focus-visible{outline:2px solid #242426;outline-offset:3px}"
+    },
+    {
+      "name":"Segmented navigation","kind":"nav",
+      "description":"Centered navigation between overview, review, and cards.",
+      "html":"<nav class=\"ds-nav\" aria-label=\"主导航\"><button aria-current=\"page\">概览</button><button>复习</button><button>卡片</button></nav>",
+      "css":".ds-nav{display:inline-flex;gap:2px;padding:3px;border-radius:9px;background:#e5e5e7}.ds-nav button{font:550 12px -apple-system,sans-serif;min-width:78px;min-height:32px;padding:4px 12px;border:0;border-radius:7px;background:transparent;color:#626266;cursor:pointer}.ds-nav button:hover{background:#dddddf;color:#242426}.ds-nav button[aria-current]{background:#fff;color:#1c1c1e;box-shadow:0 1px 3px rgb(0 0 0 / .09)}.ds-nav button:focus-visible{outline:2px solid #242426;outline-offset:3px}"
+    },
+    {
+      "name":"Deck tag","kind":"chip",
+      "description":"Quiet deck context above review content.",
+      "html":"<span class=\"ds-tag\">我的牌组</span>",
+      "css":".ds-tag{display:inline-block;font:11px/1.5 -apple-system,sans-serif;padding:5px 9px;border-radius:6px;background:#f0f0f2;color:#55555a}"
+    },
+    {
+      "name":"Content panel","kind":"card","refersTo":"panel",
+      "description":"Stable white material for overview and review content.",
+      "html":"<section class=\"ds-panel\"><h2>待复习</h2><strong>0</strong><p>从一张卡片开始。</p></section>",
+      "css":".ds-panel{font:12px/1.7 -apple-system,sans-serif;padding:26px 28px;background:#fff;color:#242426;border:1px solid #ebebed;border-radius:16px}.ds-panel h2{font-size:12px;font-weight:400;color:#707074;margin:0}.ds-panel strong{font-size:54px;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.035em;line-height:1.1}.ds-panel p{color:#707074;margin:14px 0 0}"
+    }
+  ],
+  "narrative": {
+    "northStar":"A quiet recall desk",
+    "overview":"This visual system applies to pulse.html, pulse.css, and pulse.js only. The classic homepage keeps its existing visual identity. The user selected the installed QuotaPulse macOS app as the reference and explicitly retained black and white as the main colors.\n\nA pale outer shell holds clear white panels. Centered segmented navigation, compact labels, and large tabular numbers establish a calm native-app rhythm. Card content remains the focus; the visual system adds no illustrative assets or invented learning analytics.",
+    "keyCharacteristics":["Neutral surfaces with black primary actions.","System typography with tabular numeric metrics.","A single translucent shell around stable white panels.","Optional floating deck navigation and an initially closed review outline."],
+    "rules":[
+      {"name":"The Monochrome Rule","body":"Communicate review states through text, position, and borders as well as tone. Do not introduce colored accents copied from the reference app.","section":"colors"},
+      {"name":"The Content Rule","body":"Preserve Markdown hierarchy, readable paragraphs, tables, code, and sandboxed HTML previews. Long content scrolls naturally and wraps without expanding the viewport.","section":"typography"},
+      {"name":"The One Shell Rule","body":"Apply backdrop blur only to the outer shell. Content panels use white fill and a subtle border, without shadows. Reserve structural shadows for overlays, menus, dialogs, and the selected navigation segment.","section":"elevation"}
+    ],
+    "dos":["Do use the shared card store and authenticated backend for both versions.","Do keep review content readable at narrow screen widths.","Do keep rollback available through the classic-version link.","Do document actual implemented values rather than speculative tokens."],
+    "donts":["Don't apply the Pulse system to the classic homepage automatically.","Don't invent activity history or metrics absent from stored card data.","Don't use color as the only explanation of a review state.","Don't blur or elevate every panel."]
+  }
+}
