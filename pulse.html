@@ -30,6 +30,7 @@
       <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 10a8 8 0 1 0-2 8M20 4v6h-6"/></symbol>
       <symbol id="i-pin" viewBox="0 0 24 24"><path d="m8 3 8 0-1 7 4 4v2H5v-2l4-4-1-7ZM12 16v6"/></symbol>
       <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
     </svg>
 
     <div class="pulse-app app-shell">
@@ -48,7 +49,7 @@
 
       <aside class="sidebar" id="mainSidebar" aria-label="牌组导航" inert>
         <div class="sidebar-heading"><h2>我的牌组</h2><button class="icon-button" id="closeSidebar" aria-label="关闭侧边栏"><svg class="icon"><use href="#i-close"/></svg></button></div>
-        <button class="deck-item selected" data-deck="all"><svg class="icon"><use href="#i-stack"/></svg><span>所有卡片</span><span id="allCount">0</span></button>
+        <div class="deck-row deck-row-all"><button class="deck-item selected" data-deck="all"><svg class="icon"><use href="#i-stack"/></svg><span class="deck-name">所有卡片</span><span id="allCount">0</span></button></div>
         <div id="deckList"></div>
         <div class="sidebar-foot"><span>累计复习</span><strong id="streakDays">0 次</strong></div>
       </aside>
@@ -79,8 +80,6 @@
 
         <section id="reviewView" class="view" aria-labelledby="viewTitle">
           <div class="review-navigation"><button class="button ghost" id="backToLibrary"><svg class="icon"><use href="#i-left"/></svg><span>卡片列表</span></button><span class="action-spacer"></span><button class="button ghost" id="previousCard"><svg class="icon"><use href="#i-left"/></svg><span>上一张</span></button><button class="button ghost" id="nextCard"><span>下一张</span><svg class="icon"><use href="#i-arrow"/></svg></button><button class="button ghost" id="editCurrentCard"><svg class="icon"><use href="#i-edit"/></svg><span>编辑</span></button></div>
-          <button class="outline-toggle" id="outlineToggle" aria-controls="outlinePanel" aria-expanded="false" title="打开目录"><svg class="icon"><use href="#i-list"/></svg><span>目录</span></button>
-          <aside class="outline-panel" id="outlinePanel" aria-label="复习目录" hidden><div class="outline-head"><h2>复习目录</h2><button class="icon-button" id="closeOutline" aria-label="关闭目录"><svg class="icon"><use href="#i-close"/></svg></button></div><p class="section-label">当前卡片 · 内容标题</p><nav id="headingOutline"></nav><p class="section-label">卡片列表</p><nav id="cardOutline"></nav></aside>
           <div class="review-summary" aria-label="复习进度"><div class="progress-track"><span id="progressBar"></span></div><span id="progressText">准备开始</span></div>
           <div class="review-stage">
             <article class="flashcard panel" id="flashcard" tabindex="0" aria-live="polite"><div class="card-meta"><span class="tag" id="cardDeck">牌组</span><span id="cardIndex">1 / 1</span></div><div class="card-face" id="questionFace"><p class="face-label">问题</p><div class="rendered-content" id="questionContent"></div></div><div class="answer-divider" id="answerDivider"><span>答案</span></div><div class="card-face answer-face" id="answerFace" hidden><div class="rendered-content" id="answerContent"></div></div><button class="reveal-button button primary" id="revealBtn">显示答案<kbd>Space</kbd></button></article>
@@ -89,11 +88,16 @@
           <p class="keyboard-note">空格显示答案<span>← → 切换卡片</span><span>1 – 4 评价回忆</span></p>
         </section>
 
-        <section id="libraryView" class="view" aria-labelledby="viewTitle"><div class="library-toolbar"><label class="search-box"><svg class="icon"><use href="#i-search"/></svg><input id="searchInput" type="search" placeholder="搜索问题、答案或标签" aria-label="搜索卡片"/></label><select id="deckFilter" aria-label="筛选牌组"><option value="all">所有牌组</option></select><button class="button danger" id="deleteSelectedBtn" hidden>删除所选</button></div><div class="library-heading"><span id="pulseLibraryCount">全部卡片</span><span>点击卡片开始回忆</span></div><div class="card-list" id="cardList"></div></section>
+        <section id="libraryView" class="view" aria-labelledby="viewTitle"><div class="library-toolbar"><label class="search-box"><svg class="icon"><use href="#i-search"/></svg><input id="searchInput" type="search" placeholder="搜索问题、答案或标签" aria-label="搜索卡片"/></label><div class="deck-filter" id="deckPicker"><select id="deckFilter" aria-label="筛选牌组" hidden><option value="all">所有牌组</option></select><button class="deck-filter-toggle" id="deckFilterToggle" type="button" aria-haspopup="listbox" aria-expanded="false" aria-controls="deckFilterMenu"><span id="deckFilterLabel">所有牌组</span><svg class="icon small"><use href="#i-chevron"/></svg></button></div><button class="button danger" id="deleteSelectedBtn" hidden>删除所选</button></div><div class="library-heading"><span id="pulseLibraryCount">全部卡片</span><span>点击卡片开始回忆</span></div><div class="card-list" id="cardList"></div></section>
       </main>
 
       <footer class="app-footer"><button id="cloudStatus" class="cloud-status" title="点击连接或重试同步">正在连接…</button><span class="action-spacer"></span><a class="classic-link" href="./">返回经典版<svg class="icon small"><use href="#i-arrow"/></svg></a><button class="icon-button" id="pulseSync" title="同步卡片" aria-label="同步卡片"><svg class="icon"><use href="#i-refresh"/></svg></button></footer>
     </div>
+
+    <!-- Viewport overlays stay outside the backdrop-filter shell's containing block. -->
+    <button class="outline-toggle" id="outlineToggle" aria-controls="outlinePanel" aria-expanded="false" title="打开目录"><svg class="icon"><use href="#i-list"/></svg><span>目录</span></button>
+    <aside class="outline-panel" id="outlinePanel" aria-label="复习目录" hidden><div class="outline-head"><h2>复习目录</h2><button class="icon-button" id="closeOutline" aria-label="关闭目录"><svg class="icon"><use href="#i-close"/></svg></button></div><p class="section-label">当前卡片 · 内容标题</p><nav id="headingOutline"></nav><p class="section-label">卡片列表</p><nav id="cardOutline"></nav></aside>
+    <div class="deck-filter-menu" id="deckFilterMenu" role="listbox" aria-label="筛选牌组" hidden></div>
 
     <dialog id="editorDialog" class="editor-dialog"><form method="dialog" id="editorForm"><div class="dialog-head"><div><h2 id="dialogTitle">新建卡片</h2><p>把想记住的内容，变成一个问题。</p></div><button class="icon-button close-button" type="button" data-close-dialog aria-label="关闭"><svg class="icon"><use href="#i-close"/></svg></button></div><div class="editor-grid"><div class="editor-fields"><label>牌组<input id="deckInput" required placeholder="例如：前端基础"/></label><label>问题<textarea id="questionInput" required rows="5" placeholder="支持 Markdown、表格和代码块"></textarea></label><label>答案<textarea id="answerInput" required rows="8" placeholder="写下答案，或插入 ```html 代码块"></textarea></label><label>标签<input id="tagsInput" placeholder="用逗号分隔，例如：CSS, 布局"/></label></div><div class="preview-pane"><div class="preview-head"><span>实时预览</span><div class="segmented" role="group" aria-label="预览方式"><button type="button" class="active" data-preview="rendered" aria-pressed="true">内容</button><button type="button" data-preview="html" aria-pressed="false">HTML</button></div></div><div class="preview-body rendered-content" id="livePreview"></div><div class="html-preview-wrap" id="htmlPreviewWrap" hidden><iframe id="htmlPreview" title="HTML 代码预览" sandbox></iframe><p class="preview-note">沙箱预览 · 不执行脚本或外部请求</p></div></div></div><div class="dialog-actions"><button class="button danger" type="button" id="deleteBtn" hidden>删除卡片</button><span class="action-spacer"></span><button class="button ghost" type="button" data-close-dialog>取消</button><button class="button primary" type="submit">保存卡片</button></div></form></dialog>
     <dialog class="editor-dialog export-dialog" id="exportDialog"><div class="dialog-head"><h2>按牌组导出</h2><button class="icon-button" id="closeExport" aria-label="关闭导出"><svg class="icon"><use href="#i-close"/></svg></button></div><p>每个牌组保存为一个 JSON 文件，可分别导入恢复。</p><div id="exportDeckList"></div></dialog>

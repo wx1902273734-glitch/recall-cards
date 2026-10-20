@@ -15,6 +15,74 @@
     $('#importDestination').textContent = currentDeck === 'all' ? '保留文件中的牌组' : `导入到「${currentDeck}」`;
   }
 
+  function syncDeckControls() {
+    const selected = $('#deckFilter').selectedOptions[0];
+    const label = selected ? selected.textContent : '所有牌组';
+    $('#deckFilterLabel').textContent = label;
+    $('#deckFilterToggle').setAttribute('aria-label', `筛选牌组：${label}`);
+    $$('.deck-filter-option').forEach(button => {
+      const active = button.dataset.value === $('#deckFilter').value;
+      button.setAttribute('aria-selected', String(active));
+      button.tabIndex = active ? 0 : -1;
+    });
+    $$('#mainSidebar [data-deck]').forEach(button => {
+      if (button.dataset.deck === currentDeck) button.setAttribute('aria-current', 'true');
+      else button.removeAttribute('aria-current');
+    });
+  }
+
+  function closeDeckPicker(restoreFocus = false) {
+    $('#deckFilterMenu').hidden = true;
+    $('#deckFilterToggle').setAttribute('aria-expanded', 'false');
+    if (restoreFocus) $('#deckFilterToggle').focus();
+  }
+
+  function positionDeckPicker() {
+    const menu = $('#deckFilterMenu');
+    const anchor = $('#deckFilterToggle').getBoundingClientRect();
+    const width = Math.min(Math.max(anchor.width, 220), window.innerWidth - 24);
+    const below = window.innerHeight - anchor.bottom - 20;
+    const above = anchor.top - 20;
+    const openAbove = below < 140 && above > below;
+    const maxHeight = Math.max(80, Math.min(280, openAbove ? above : below));
+    menu.style.width = `${width}px`;
+    menu.style.maxHeight = `${maxHeight}px`;
+    menu.style.left = `${Math.max(12, Math.min(anchor.right - width, window.innerWidth - width - 12))}px`;
+    menu.style.top = `${openAbove ? Math.max(12, anchor.top - Math.min(menu.scrollHeight, maxHeight) - 8) : anchor.bottom + 8}px`;
+  }
+
+  function openDeckPicker(focusOption = false, last = false) {
+    toggleSidebar(true);
+    $('#importMenu').open = false;
+    $('#deckFilterMenu').hidden = false;
+    $('#deckFilterToggle').setAttribute('aria-expanded', 'true');
+    positionDeckPicker();
+    if (focusOption) {
+      const options = $$('.deck-filter-option');
+      (last ? options.at(-1) : options.find(button => button.getAttribute('aria-selected') === 'true') || options[0])?.focus();
+    }
+  }
+
+  function renderDeckPicker() {
+    const menu = $('#deckFilterMenu');
+    menu.replaceChildren();
+    [...$('#deckFilter').options].forEach(option => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'deck-filter-option';
+      button.dataset.value = option.value;
+      button.setAttribute('role', 'option');
+      button.innerHTML = `<span>${escapeHtml(option.textContent)}</span>${icon('check')}`;
+      button.onclick = () => {
+        $('#deckFilter').value = option.value;
+        $('#deckFilter').dispatchEvent(new Event('change', {bubbles: true}));
+        closeDeckPicker(true);
+      };
+      menu.append(button);
+    });
+    syncDeckControls();
+  }
+
   function renderOverview() {
     const due = dueCards();
     const groups = new Map();
@@ -99,6 +167,8 @@
     });
     $('#pulseDate').hidden = name !== 'overview';
     $('#importMenu').open = false;
+    closeDeckPicker();
+    syncDeckControls();
     updateImportDestination();
   };
 
@@ -106,6 +176,8 @@
     classicRefreshSidebar();
     renderOverview();
     updateImportDestination();
+    renderDeckPicker();
+    $$('#deckList .deck-dot').forEach(dot => { dot.outerHTML = icon('stack'); });
     $$('.deck-manage').forEach(button => {
       button.innerHTML = icon('more');
       button.setAttribute('aria-label', `管理牌组 ${button.dataset.manageDeck}`);
@@ -145,6 +217,28 @@
     else showView('overview');
   });
   $('#searchInput').oninput = () => renderLibrary();
+  $('#deckFilterToggle').onclick = () => $('#deckFilterMenu').hidden ? openDeckPicker() : closeDeckPicker();
+  $('#deckFilterToggle').addEventListener('keydown', event => {
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      openDeckPicker(true, event.key === 'ArrowUp');
+    }
+  });
+  $('#deckFilterMenu').addEventListener('keydown', event => {
+    const options = $$('.deck-filter-option');
+    const index = options.indexOf(document.activeElement);
+    let next;
+    if (event.key === 'ArrowDown') next = (index + 1) % options.length;
+    if (event.key === 'ArrowUp') next = (index - 1 + options.length) % options.length;
+    if (event.key === 'Home') next = 0;
+    if (event.key === 'End') next = options.length - 1;
+    if (next !== undefined) { event.preventDefault(); options[next]?.focus(); }
+    if (event.key === 'Tab') closeDeckPicker(true);
+  });
+  window.addEventListener('resize', () => { if (!$('#deckFilterMenu').hidden) positionDeckPicker(); });
+  window.addEventListener('scroll', event => {
+    if (!$('#deckFilterMenu').hidden && !$('#deckFilterMenu').contains(event.target)) closeDeckPicker();
+  }, true);
   $('#startPulseReview').onclick = () => {
     if (!dueCards().length) return cards.length ? openAllCards() : openEditor();
     currentDeck = 'all';
@@ -161,11 +255,13 @@
     $$('.segmented button').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
   }));
   document.addEventListener('click', event => {
+    if (!event.target.closest('#deckPicker,#deckFilterMenu')) closeDeckPicker();
     if (!event.target.closest('#importMenu')) $('#importMenu').open = false;
     if (!event.target.closest('#mainSidebar,#sidebarToggle,#deckMenu')) toggleSidebar(true);
   });
   document.addEventListener('keydown', event => {
     if (event.key === 'Escape') {
+      if (!$('#deckFilterMenu').hidden) closeDeckPicker(true);
       if (!document.body.classList.contains('sidebar-collapsed')) { toggleSidebar(true); $('#sidebarToggle').focus(); }
       $('#importMenu').open = false;
     }
